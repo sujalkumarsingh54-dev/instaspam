@@ -1,5 +1,3 @@
-# main.py  ← pura replace kar de isse
-
 from flask import Flask, render_template, request, redirect, url_for, session
 from instagrapi import Client
 from instagrapi.exceptions import TwoFactorRequired
@@ -70,33 +68,35 @@ def index():
 
     user_id = session.get('user_id')
     
-    # ← YE FIX HAI (agar user_id nahi hai ya server restart ho gaya ho)
+    # Fix: If user_id missing or restart, recreate
     if not user_id or user_id not in users_data:
         user_id = str(uuid.uuid4())
         session['user_id'] = user_id
         users_data[user_id] = {
             "running": False, "total_sent": 0, "status": "Ready",
-            "threads": 0, "logs": [], "clients": [], "worker_threads": []
+            "threads": 0, "logs": [], "clients": [], "worker_threads": [],
+            "username": "", "password": "", "thread_id": "", "messages": "",
+            "delay": 8, "cycle_count": 50, "cycle_break": 35, "threads_num": 3
         }
 
     data = users_data[user_id]
 
     if request.method == 'POST':
+        # Save form data to persist on reload
+        data["username"] = request.form['username']
+        data["password"] = request.form['password']
+        data["thread_id"] = request.form['thread_id']
+        data["messages"] = request.form['messages']
+        data["delay"] = float(request.form.get('delay', 8))
+        data["cycle_count"] = int(request.form.get('cycle_count', 50))
+        data["cycle_break"] = int(request.form.get('cycle_break', 35))
+        data["threads_num"] = int(request.form['threads'])
+
+        # Start bombing logic (same as before)
         data["running"] = False
         time.sleep(2)
         data["logs"] = []
         add_log(user_id, "New bombing session started...", "cyan")
-
-        data.update({
-            "username": request.form['username'],
-            "password": request.form['password'],
-            "thread_id": int(request.form['thread_id']),
-            "messages": [m.strip() for m in request.form['messages'].split('\n') if m.strip()],
-            "delay": float(request.form.get('delay', 8)),
-            "cycle_count": int(request.form.get('cycle_count', 50)),
-            "cycle_break": int(request.form.get('cycle_break', 35)),
-            "threads_num": int(request.form['threads'])
-        })
 
         data["running"] = True
         data["total_sent"] = 0
@@ -112,8 +112,8 @@ def index():
                 add_log(user_id, f"Thread {i+1} → Login Success", "lime")
                 data["clients"].append(cl)
                 t = threading.Thread(target=spam_worker, args=(user_id, cl,
-                    data["thread_id"], data["messages"], data["delay"],
-                    data["cycle_count"], data["cycle_break"]), daemon=True)
+                    int(data["thread_id"]), data["messages"].split('\n'),
+                    data["delay"], data["cycle_count"], data["cycle_break"]), daemon=True)
                 t.start()
                 data["worker_threads"].append(t)
             except TwoFactorRequired:
@@ -128,11 +128,20 @@ def index():
             data["running"] = False
             data["status"] = "Login Failed"
 
+    # Pass all form values to template for persistence
     return render_template('index.html',
         status=data.get("status", "Ready"),
         total_sent=data.get("total_sent", 0),
         threads=data.get("threads", 0),
-        logs=data.get("logs", [])
+        logs=data.get("logs", []),
+        username=data.get("username", ""),
+        password=data.get("password", ""),  # Won't show in input
+        thread_id=data.get("thread_id", ""),
+        messages=data.get("messages", ""),
+        delay=data.get("delay", 8),
+        cycle_count=data.get("cycle_count", 50),
+        cycle_break=data.get("cycle_break", 35),
+        threads_num=data.get("threads_num", 3)
     )
 
 @app.route('/stop')

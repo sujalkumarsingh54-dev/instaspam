@@ -36,33 +36,17 @@
             <div class="card p-4 shadow-lg">
                 <form method="POST">
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <input type="text" name="username" class="form-control bg-dark text-white" 
-                                   placeholder="Username/Email/Phone" value="{{ username }}" required>
-                        </div>
-                        <div class="col-md-6">
-                            <input type="password" name="password" class="form-control bg-dark text-white" 
-                                   placeholder="Password" required>
-                        </div>
-                        <div class="col-12">
-                            <input type="number" name="thread_id" class="form-control bg-dark text-white" 
-                                   placeholder="Group Thread ID" value="{{ thread_id }}" required>
-                        </div>
+                        <div class="col-md-6"><input type="text" name="username" class="form-control bg-dark text-white" placeholder="Username/Email/Phone" value="{{ username }}" required></div>
+                        <div class="col-md-6"><input type="password" name="password" class="form-control bg-dark text-white" placeholder="Password" required></div>
+                        <div class="col-12"><input type="number" name="thread_id" class="form-control bg-dark text-white" placeholder="Group Thread ID" value="{{ thread_id }}" required></div>
                         
                         <div class="col-12">
-                            <textarea name="messages" class="form-control bg-dark text-white" rows="7" 
-                                      placeholder="Ek line = Ek message&#10;RAMU KAKA LADKE TMKC&#10;KING KUNAL ON TOP&#10;SUJAL BAAP KA RAJ" required>{{ messages }}</textarea>
+                            <textarea name="messages" class="form-control bg-dark text-white" rows="7" placeholder="Ek line = Ek message..." required>{{ messages }}</textarea>
                         </div>
 
-                        <div class="col-md-3">
-                            <input type="number" step="0.1" name="delay" value="{{ delay }}" class="form-control" placeholder="Delay (sec)">
-                        </div>
-                        <div class="col-md-3">
-                            <input type="number" name="cycle_count" value="{{ cycle_count }}" class="form-control" placeholder="After msgs">
-                        </div>
-                        <div class="col-md-3">
-                            <input type="number" name="cycle_break" value="{{ cycle_break }}" class="form-control" placeholder="Break (sec)">
-                        </div>
+                        <div class="col-md-3"><input type="number" step="0.1" name="delay" value="{{ delay }}" class="form-control" placeholder="Delay (sec)"></div>
+                        <div class="col-md-3"><input type="number" name="cycle_count" value="{{ cycle_count }}" class="form-control" placeholder="After msgs"></div>
+                        <div class="col-md-3"><input type="number" name="cycle_break" value="{{ cycle_break }}" class="form-control" placeholder="Break (sec)"></div>
                         <div class="col-md-3">
                             <select name="threads" class="form-select bg-dark text-white">
                                 <option value="1" {% if threads_num == 1 %}selected{% endif %}>1 Thread</option>
@@ -74,12 +58,8 @@
                         </div>
 
                         <div class="col-12 text-center mt-4">
-                            <button type="submit" class="btn btn-start btn-lg px-5 shadow">
-                                <i class="fas fa-bomb"></i> START BOMBING
-                            </button>
-                            <a href="/stop" class="btn btn-stop btn-lg px-5 ms-3 shadow">
-                                <i class="fas fa-stop"></i> STOP
-                            </a>
+                            <button type="submit" class="btn btn-start btn-lg px-5 shadow"><i class="fas fa-bomb"></i> START BOMBING</button>
+                            <a href="/stop" class="btn btn-stop btn-lg px-5 ms-3 shadow"><i class="fas fa-stop"></i> STOP</a>
                             <a href="/clear" class="btn btn-warning btn-lg px-5 ms-3">CLEAR LOGS</a>
                         </div>
                     </div>
@@ -100,8 +80,21 @@
 </div>
 
 <script>
-// Auto refresh every 3 seconds (sirf console update karega, form data nahi jayega)
-setInterval(() => location.reload(), 3000);
+// Sirf console ko live update karega, form data nahi jayega
+function updateConsole() {
+    fetch(window.location.href)
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newConsole = doc.querySelector('#console').innerHTML;
+            document.querySelector('#console').innerHTML = newConsole;
+            document.querySelector('#console').scrollTop = document.querySelector('#console').scrollHeight;
+        })
+        .catch(err => console.log('Update failed, retrying...'));
+}
+setInterval(updateConsole, 3000);  // Har 3 sec sirf console refresh
+updateConsole();  // Pehla update turant
 </script>
 </body>
 </html>

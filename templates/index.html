@@ -25,7 +25,7 @@
 <div class="container py-5">
     <div class="text-center mb-5">
         <h1 class="display-4 fw-bold">HAWK SUJAL SPAMMER v9</h1>
-        <p class="lead">Instagram Group Bomber • Multi-Thread • 2FA Support • Telegram Guard</p>
+        <p class="lead">Instagram Group Bomber • Multi-Thread • 2FA Support</p>
         <span class="badge bg-danger fs-6">STATUS: {{ status }}</span>
         <span class="badge bg-success ms-2">SENT: {{ total_sent }}</span>
         <span class="badge bg-info ms-2">THREADS: {{ threads }}</span>
@@ -36,30 +36,50 @@
             <div class="card p-4 shadow-lg">
                 <form method="POST">
                     <div class="row g-3">
-                        <div class="col-md-6"><input type="text" name="username" class="form-control bg-dark text-white" placeholder="Username/Email/Phone" required></div>
-                        <div class="col-md-6"><input type="password" name="password" class="form-control bg-dark text-white" placeholder="Password" required></div>
-                        <div class="col-12"><input type="number" name="thread_id" class="form-control bg-dark text-white" placeholder="Group Thread ID" required></div>
+                        <div class="col-md-6">
+                            <input type="text" name="username" class="form-control bg-dark text-white" 
+                                   placeholder="Username/Email/Phone" value="{{ username }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="password" name="password" class="form-control bg-dark text-white" 
+                                   placeholder="Password" required>
+                        </div>
+                        <div class="col-12">
+                            <input type="number" name="thread_id" class="form-control bg-dark text-white" 
+                                   placeholder="Group Thread ID" value="{{ thread_id }}" required>
+                        </div>
                         
                         <div class="col-12">
-                            <textarea name="messages" class="form-control bg-dark text-white" rows="7" placeholder="Ek line = Ek message&#10;RAMU KAKA LADKE TMKC&#10;KING KUNAL ON TOP&#10;SUJAL BAAP KA RAJ" required></textarea>
+                            <textarea name="messages" class="form-control bg-dark text-white" rows="7" 
+                                      placeholder="Ek line = Ek message&#10;RAMU KAKA LADKE TMKC&#10;KING KUNAL ON TOP&#10;SUJAL BAAP KA RAJ" required>{{ messages }}</textarea>
                         </div>
 
-                        <div class="col-md-3"><input type="number" step="0.1" name="delay" value="8" class="form-control" placeholder="Delay (sec)"></div>
-                        <div class="col-md-3"><input type="number" name="cycle_count" value="50" class="form-control" placeholder="After msgs"></div>
-                        <div class="col-md-3"><input type="number" name="cycle_break" value="35" class="form-control" placeholder="Break (sec)"></div>
+                        <div class="col-md-3">
+                            <input type="number" step="0.1" name="delay" value="{{ delay }}" class="form-control" placeholder="Delay (sec)">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" name="cycle_count" value="{{ cycle_count }}" class="form-control" placeholder="After msgs">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" name="cycle_break" value="{{ cycle_break }}" class="form-control" placeholder="Break (sec)">
+                        </div>
                         <div class="col-md-3">
                             <select name="threads" class="form-select bg-dark text-white">
-                                <option value="1">1 Thread</option>
-                                <option value="2">2 Threads</option>
-                                <option value="3" selected>3 Threads</option>
-                                <option value="4">4 Threads</option>
-                                <option value="5">5 Threads</option>
+                                <option value="1" {% if threads_num == 1 %}selected{% endif %}>1 Thread</option>
+                                <option value="2" {% if threads_num == 2 %}selected{% endif %}>2 Threads</option>
+                                <option value="3" {% if threads_num == 3 %}selected{% endif %}>3 Threads</option>
+                                <option value="4" {% if threads_num == 4 %}selected{% endif %}>4 Threads</option>
+                                <option value="5" {% if threads_num == 5 %}selected{% endif %}>5 Threads</option>
                             </select>
                         </div>
 
                         <div class="col-12 text-center mt-4">
-                            <button type="submit" class="btn btn-start btn-lg px-5 shadow"><i class="fas fa-bomb"></i> START BOMBING</button>
-                            <a href="/stop" class="btn btn-stop btn-lg px-5 ms-3 shadow"><i class="fas fa-stop"></i> STOP</a>
+                            <button type="submit" class="btn btn-start btn-lg px-5 shadow">
+                                <i class="fas fa-bomb"></i> START BOMBING
+                            </button>
+                            <a href="/stop" class="btn btn-stop btn-lg px-5 ms-3 shadow">
+                                <i class="fas fa-stop"></i> STOP
+                            </a>
                             <a href="/clear" class="btn btn-warning btn-lg px-5 ms-3">CLEAR LOGS</a>
                         </div>
                     </div>
@@ -80,7 +100,8 @@
 </div>
 
 <script>
-setInterval(() => location.reload(), 3000); // Auto refresh every 3 sec
+// Auto refresh every 3 seconds (sirf console update karega, form data nahi jayega)
+setInterval(() => location.reload(), 3000);
 </script>
 </body>
 </html>
